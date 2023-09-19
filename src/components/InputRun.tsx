@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useSocket } from '../useHooks/useSocket';
+import { useRef, forwardRef, Ref, useImperativeHandle } from 'react';
 
 const InputContainer = styled.div`
 	display: grid;
@@ -11,6 +11,7 @@ const LabelInput = styled.h1`
 	font-size: 40px;
 	color: #fefefe;
 	text-align: center;
+	user-select: none;
 `;
 
 const InputType = styled.input`
@@ -20,6 +21,7 @@ const InputType = styled.input`
 	font-size: 30px;
 	text-align: center;
 	font-weight: bold;
+	border-radius: 10px;
 `;
 
 const ButtonRace = styled.button`
@@ -39,20 +41,58 @@ const ButtonRace = styled.button`
 
 type InputRunProps = {
 	startRace: () => void;
+	validateSymbol: (symbol: string) => void;
+	symbol: string;
+	ref: Ref<InputRunRef>;
 };
 
-export const InputRun: React.FC<InputRunProps> = ({startRace}) => {
-	// const {startRaceAction} = useSocket();
-
-	const onStartRace = () => {
-		startRace();
-	};
-
-	return (
-		<InputContainer>
-			<LabelInput>34123</LabelInput>
-			<ButtonRace onClick={onStartRace}>Start Race</ButtonRace>
-			<InputType placeholder="Please type characters above..." />
-		</InputContainer>
-	);
+export type InputRunRef = {
+	cleanInput: () => void;
 };
+
+export const InputRun: React.FC<InputRunProps> = forwardRef(
+	({ startRace, symbol, validateSymbol }, ref) => {
+		// const {startRaceAction} = useSocket();
+
+		const inputRef = useRef<HTMLInputElement>(null);
+
+		useImperativeHandle(ref, () => ({
+			cleanInput
+		}));
+
+		const onStartRace = () => {
+			startRace();
+		};
+
+		const cleanInput = () => {
+			if (inputRef.current) {
+				inputRef.current.value = '';
+			}
+		};
+
+		const onType = (e: React.ChangeEvent<HTMLInputElement>) => {
+			const { value } = e.target;
+			if (value.length === symbol.length) {
+				validateSymbol(value);
+			}
+		};
+
+		return (
+			<InputContainer>
+				{symbol.length > 0 ? (
+					<LabelInput style={{ pointerEvents: 'none' }}>
+						{symbol}
+					</LabelInput>
+				) : (
+					<ButtonRace onClick={onStartRace}>Start Race</ButtonRace>
+				)}
+
+				<InputType
+					ref={inputRef}
+					onChange={onType}
+					placeholder="Please type characters above..."
+				/>
+			</InputContainer>
+		);
+	}
+);

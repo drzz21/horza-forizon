@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { HorseRider } from './HorseRider';
-import { InputRun } from './InputRun';
-import { useEffect, useState } from 'react';
+import { InputRun, InputRunRef } from './InputRun';
+import { useEffect, useState, useRef } from 'react';
 import { useSocket } from '../useHooks/useSocket';
 
 const Title = styled.div`
@@ -61,21 +61,28 @@ const FieldGridLines = styled.div`
 	position: absolute;
 `;
 
-
 export const FieldRace: React.FC = () => {
+	const { lastJsonMessage, startRaceAction, validateSymbol } = useSocket();
 
-	const { lastJsonMessage,startRaceAction } = useSocket();
-	
+	const inputRunRef = useRef<InputRunRef>(null);
 
 	const [horses, setHorses] = useState([]);
-	const [myHorse, setMyHorse] = useState({});
+	// const [myHorse, setMyHorse] = useState({});
+
+	const [symbol, setSymbol] = useState('');
 
 	// console.log(lastJsonMessage?.allHorses);
 
 	useEffect(() => {
-		setMyHorse(lastJsonMessage?.horse);
-		setHorses(lastJsonMessage?.allHorses);
-	}, [lastJsonMessage?.horse, lastJsonMessage?.allHorses]);
+		if (lastJsonMessage?.action === 'next-symbol') {
+			setSymbol(lastJsonMessage?.symbol ?? '');
+			inputRunRef.current?.cleanInput();
+		}
+
+		if (!lastJsonMessage?.allHorses) return;
+		// setMyHorse(lastJsonMessage?.horse);
+		setHorses(lastJsonMessage?.allHorses ?? []);
+	}, [lastJsonMessage]);
 
 	return (
 		<>
@@ -97,16 +104,22 @@ export const FieldRace: React.FC = () => {
 					))}
 				</FieldGridLines>
 
-
-				{horses?.map((horse:{name:string,id:string,position:number}) => (
-					<FieldLine key={horse.id}>
-						<HorseRider infoHorse={horse} />
-						<Wave />
-					</FieldLine>
-				))}
+				{horses?.map(
+					(horse: { name: string; id: string; position: number }) => (
+						<FieldLine key={horse.id}>
+							<HorseRider infoHorse={horse} />
+							<Wave />
+						</FieldLine>
+					)
+				)}
 			</Field>
 
-			<InputRun startRace={startRaceAction} />
+			<InputRun
+				startRace={startRaceAction}
+				validateSymbol={validateSymbol}
+				symbol={symbol}
+				ref={inputRunRef}
+			/>
 		</>
 	);
 };

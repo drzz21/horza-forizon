@@ -13,9 +13,10 @@ type HorseRiderProps = {
 };
 
 export const HorseRider: React.FC<HorseRiderProps> = ({ infoHorse }) => {
+
 	const Rider = styled.div`
 		width: fit-content;
-		margin-left: ${infoHorse?.position * 5}px;
+		margin-left: ${infoHorse?.position * 150}px;
 		width: 100px;
 		padding: 10px;
 	`;

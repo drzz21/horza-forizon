@@ -4,22 +4,21 @@ const socketUrl = 'ws://localhost:3000/race';
 
 type HorseMessage = {
 	lastJsonMessage: {
-		allHorses: [];
-		horse: {
+		action?: string;
+		allHorses?: [];
+		symbol?: string;
+		horse?: {
 			id: string;
 			name: string;
 			position: number;
 		};
 	};
-	sendMessage: unknown;
-	sendJsonMessage: (
-		message: {action: string},
-		keep?: boolean
-	) => void;
+	// sendMessage: unknown;
+	sendJsonMessage: (message: { action: string }, keep?: boolean) => void;
 };
 
 export const useSocket = () => {
-	const { lastJsonMessage, sendJsonMessage,sendMessage }: HorseMessage = useWebSocket(
+	const { lastJsonMessage, sendJsonMessage }: HorseMessage = useWebSocket(
 		socketUrl,
 		{
 			onOpen: () => console.log('opened'),
@@ -27,9 +26,12 @@ export const useSocket = () => {
 	);
 
 	const startRaceAction = () => {
-		console.log('sent start race');
-		sendJsonMessage({ "action": 'start-race' });
+		sendJsonMessage({ 'action': 'start-race', 'steps-amount': 10 });
 	};
 
-	return { lastJsonMessage, startRaceAction };
+	const validateSymbol = (symbol: string) => {
+		sendJsonMessage({ 'action': 'submit-letter', 'data': symbol });
+	};
+
+	return { lastJsonMessage, startRaceAction, validateSymbol };
 };
