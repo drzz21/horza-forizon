@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { useSocket } from '../useHooks/useSocket';
 
 const InputContainer = styled.div`
 	display: grid;
@@ -21,11 +22,37 @@ const InputType = styled.input`
 	font-weight: bold;
 `;
 
-export const InputRun = () => {
+const ButtonRace = styled.button`
+	outline: none;
+	height: 50px;
+	width: 500px;
+	font-size: 30px;
+	text-align: center;
+	font-weight: bold;
+	background-color: #5cc641;
+	color: #fefefe;
+	border: none;
+	border-radius: 10px;
+	margin: 10px 0;
+	cursor: pointer;
+`;
+
+type InputRunProps = {
+	startRace: () => void;
+};
+
+export const InputRun: React.FC<InputRunProps> = ({startRace}) => {
+	// const {startRaceAction} = useSocket();
+
+	const onStartRace = () => {
+		startRace();
+	};
+
 	return (
 		<InputContainer>
 			<LabelInput>34123</LabelInput>
-			<InputType placeholder='Please type characters above...' />
+			<ButtonRace onClick={onStartRace}>Start Race</ButtonRace>
+			<InputType placeholder="Please type characters above..." />
 		</InputContainer>
 	);
 };

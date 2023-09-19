@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
 import { HorseRider } from './HorseRider';
 import { InputRun } from './InputRun';
+import { useEffect, useState } from 'react';
+import { useSocket } from '../useHooks/useSocket';
 
 const Title = styled.div`
 	font-size: 60px;
@@ -59,8 +61,21 @@ const FieldGridLines = styled.div`
 	position: absolute;
 `;
 
+
 export const FieldRace: React.FC = () => {
-	// console.log(styled);
+
+	const { lastJsonMessage,startRaceAction } = useSocket();
+	
+
+	const [horses, setHorses] = useState([]);
+	const [myHorse, setMyHorse] = useState({});
+
+	// console.log(lastJsonMessage?.allHorses);
+
+	useEffect(() => {
+		setMyHorse(lastJsonMessage?.horse);
+		setHorses(lastJsonMessage?.allHorses);
+	}, [lastJsonMessage?.horse, lastJsonMessage?.allHorses]);
 
 	return (
 		<>
@@ -68,33 +83,30 @@ export const FieldRace: React.FC = () => {
 
 			<NumbersRow>
 				{[...Array(10)].map((_, i) => (
-					<div>{i + 1}</div>
+					<div key={i}>{i + 1}</div>
 				))}
 			</NumbersRow>
 
 			<Field>
 				<FieldGridLines>
-					{[...Array(10)].map(() => (
-						<div style={{ borderLeft: '2px solid black' }}></div>
+					{[...Array(10)].map((el) => (
+						<div
+							key={el}
+							style={{ borderRight: '2px solid black' }}
+						></div>
 					))}
 				</FieldGridLines>
 
-				<FieldLine>
-					<HorseRider />
-					<Wave />
-				</FieldLine>
-				<FieldLine>
-					<HorseRider />
-					<Wave />
-				</FieldLine>
-				<FieldLine>
-					<HorseRider />
-					<Wave />
-				</FieldLine>
-				
+
+				{horses?.map((horse:{name:string,id:string,position:number}) => (
+					<FieldLine key={horse.id}>
+						<HorseRider infoHorse={horse} />
+						<Wave />
+					</FieldLine>
+				))}
 			</Field>
 
-			<InputRun />
+			<InputRun startRace={startRaceAction} />
 		</>
 	);
 };
