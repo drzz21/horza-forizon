@@ -14,7 +14,7 @@ type HorseMessage = {
 		};
 	};
 	// sendMessage: unknown;
-	sendJsonMessage: (message: { action: string }, keep?: boolean) => void;
+	sendJsonMessage: (message: { action: string,'steps-amount'?:number,'data'?:string }, keep?: boolean) => void;
 };
 
 export const useSocket = () => {
