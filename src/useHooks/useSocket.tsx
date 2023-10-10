@@ -1,6 +1,6 @@
 import useWebSocket from 'react-use-websocket';
 
-const socketUrl = 'ws://localhost:3000/race';
+const socketUrl = 'ws://horza-back.fly.dev/race';
 
 type HorseMessage = {
 	lastJsonMessage: {
