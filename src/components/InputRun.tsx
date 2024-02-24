@@ -3,7 +3,7 @@ import { useRef, forwardRef, Ref, useImperativeHandle } from 'react';
 
 const InputContainer = styled.div`
 	display: grid;
-	place-content: center;
+	place-items: center;
 	width: 100%;
 `;
 
@@ -17,8 +17,8 @@ const LabelInput = styled.h1`
 const InputType = styled.input`
 	outline: none;
 	height: 50px;
-	width: 500px;
-	font-size: 30px;
+	width: 400px;
+	font-size: 25px;
 	text-align: center;
 	font-weight: bold;
 	border-radius: 10px;
@@ -27,7 +27,7 @@ const InputType = styled.input`
 const ButtonRace = styled.button`
 	outline: none;
 	height: 50px;
-	width: 500px;
+	width: 400px;
 	font-size: 30px;
 	text-align: center;
 	font-weight: bold;

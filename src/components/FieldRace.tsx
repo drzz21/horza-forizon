@@ -4,6 +4,10 @@ import { InputRun, InputRunRef } from './InputRun';
 import { useEffect, useState, useRef } from 'react';
 import { useSocket } from '../useHooks/useSocket';
 
+const MainContainer = styled.div`
+	margin: 20px;
+`;
+
 const Title = styled.div`
 	font-size: 60px;
 	display: grid;
@@ -12,15 +16,19 @@ const Title = styled.div`
 	font-weight: bold;
 `;
 
+const FieldContainer = styled.div`
+	overflow-x: auto;
+	scroll-behavior: smooth;
+`;
+
 const Field = styled.div`
 	position: relative;
 	margin: 0 auto;
 
 	font-size: 30px;
 	background-color: #5cc641;
-	width: 1500px;
 
-	overflow: hidden;
+	width: 1500px;
 `;
 
 const Wave = styled.div`
@@ -65,6 +73,7 @@ export const FieldRace: React.FC = () => {
 	const { lastJsonMessage, startRaceAction, validateSymbol } = useSocket();
 
 	const inputRunRef = useRef<InputRunRef>(null);
+	const scrollRef = useRef<HTMLDivElement>(null);
 
 	const [horses, setHorses] = useState([]);
 	// const [myHorse, setMyHorse] = useState({});
@@ -77,6 +86,9 @@ export const FieldRace: React.FC = () => {
 		if (lastJsonMessage?.action === 'next-symbol') {
 			setSymbol(lastJsonMessage?.symbol ?? '');
 			inputRunRef.current?.cleanInput();
+			if (symbol !== '') {
+				scrollRef.current!.scrollLeft += 150;
+			}
 		}
 
 		if (!lastJsonMessage?.allHorses) return;
@@ -85,34 +97,39 @@ export const FieldRace: React.FC = () => {
 	}, [lastJsonMessage]);
 
 	return (
-		<>
+		<MainContainer>
 			<Title>Horza Forizon</Title>
 
-			<NumbersRow>
-				{[...Array(10)].map((_, i) => (
-					<div key={i}>{i + 1}</div>
-				))}
-			</NumbersRow>
-
-			<Field>
-				<FieldGridLines>
-					{[...Array(10)].map((el) => (
-						<div
-							key={el}
-							style={{ borderRight: '2px solid black' }}
-						></div>
+			<FieldContainer ref={scrollRef}>
+				<NumbersRow>
+					{[...Array(10)].map((_, i) => (
+						<div key={i}>{i + 1}</div>
 					))}
-				</FieldGridLines>
+				</NumbersRow>
+				<Field>
+					<FieldGridLines>
+						{[...Array(10)].map((el) => (
+							<div
+								key={el}
+								style={{ borderRight: '2px solid black' }}
+							></div>
+						))}
+					</FieldGridLines>
 
-				{horses?.map(
-					(horse: { name: string; id: string; position: number }) => (
-						<FieldLine key={horse.id}>
-							<HorseRider infoHorse={horse} />
-							<Wave />
-						</FieldLine>
-					)
-				)}
-			</Field>
+					{horses?.map(
+						(horse: {
+							name: string;
+							id: string;
+							position: number;
+						}) => (
+							<FieldLine key={horse.id}>
+								<HorseRider infoHorse={horse} />
+								<Wave />
+							</FieldLine>
+						)
+					)}
+				</Field>
+			</FieldContainer>
 
 			<InputRun
 				startRace={startRaceAction}
@@ -120,6 +137,6 @@ export const FieldRace: React.FC = () => {
 				symbol={symbol}
 				ref={inputRunRef}
 			/>
-		</>
+		</MainContainer>
 	);
 };
